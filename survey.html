@@ -334,6 +334,60 @@
     margin: 4px 0;
   }
 
+  /* Form lock overlay */
+  .form-locked {
+    position: relative;
+  }
+
+  .form-locked::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(244,246,249,0.75);
+    border-radius: 4px;
+    z-index: 10;
+    pointer-events: all;
+    cursor: not-allowed;
+  }
+
+  .quarter-bar.needs-selection {
+    border: 2px solid var(--error);
+    animation: shake 0.3s ease;
+  }
+
+  .quarter-bar .quarter-required-msg {
+    font-size: 12px;
+    color: #fca5a5;
+    font-weight: 600;
+    margin-left: auto;
+    display: none;
+  }
+
+  .quarter-bar.needs-selection .quarter-required-msg {
+    display: block;
+  }
+
+  .quarter-prompt {
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    border-radius: 4px;
+    padding: 14px 20px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    color: #92400e;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .quarter-prompt svg { flex-shrink: 0; color: #d97706; }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+
   @media (max-width: 600px) {
     .fields-grid, .fields-grid.triple { grid-template-columns: 1fr; }
   }
@@ -359,16 +413,23 @@
   <div class="status-banner" id="statusBanner"></div>
 
   <!-- Quarter Selector -->
-  <div class="quarter-bar">
+  <div class="quarter-bar" id="quarterBar">
     <label for="quarterSelect">Reporting Quarter:</label>
-    <select id="quarterSelect">
+    <select id="quarterSelect" onchange="checkQuarterSelected()">
       <option value="">— Select Quarter —</option>
     </select>
     <label for="yearSelect">Year:</label>
-    <select id="yearSelect"></select>
+    <select id="yearSelect" onchange="checkQuarterSelected()"></select>
+    <span class="quarter-required-msg">⚠ Please select a quarter to continue</span>
   </div>
 
-  <!-- Section 1: Historical AR Metrics -->
+  <!-- Quarter prompt (shown until quarter selected) -->
+  <div class="quarter-prompt" id="quarterPrompt">
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    Please select a <strong>&nbsp;Quarter&nbsp;</strong> and <strong>&nbsp;Year&nbsp;</strong> above before entering your metrics.
+  </div>
+
+  <div id="formSections">
   <div class="section-card">
     <div class="section-head">
       <h2>Accounts Receivable Metrics</h2>
@@ -530,8 +591,10 @@
     </div>
   </div>
 
+  </div><!-- /formSections -->
+
   <!-- Submit -->
-  <div class="submit-area">
+  <div class="submit-area" id="submitArea">
     <div class="anon-note">
       <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
@@ -574,12 +637,34 @@
       opt.textContent = y;
       ySel.appendChild(opt);
     }
-    // Auto-select current quarter
-    const month = new Date().getMonth();
-    const curQ = Math.floor(month / 3) + 1;
-    qSel.value = curQ;
     ySel.value = curYear;
+    // Start locked — no quarter pre-selected
+    lockForm();
   })();
+
+  function lockForm() {
+    document.getElementById('formSections').classList.add('form-locked');
+    document.getElementById('submitArea').classList.add('form-locked');
+    document.getElementById('quarterPrompt').style.display = 'flex';
+    document.getElementById('submitBtn').disabled = true;
+  }
+
+  function unlockForm() {
+    document.getElementById('formSections').classList.remove('form-locked');
+    document.getElementById('submitArea').classList.remove('form-locked');
+    document.getElementById('quarterPrompt').style.display = 'none';
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('quarterBar').classList.remove('needs-selection');
+  }
+
+  function checkQuarterSelected() {
+    const quarter = document.getElementById('quarterSelect').value;
+    if (quarter) {
+      unlockForm();
+    } else {
+      lockForm();
+    }
+  }
 
   async function submitForm() {
     const quarter = document.getElementById('quarterSelect').value;
@@ -590,9 +675,8 @@
     banner.className = 'status-banner';
 
     if (!quarter) {
-      banner.className = 'status-banner error';
-      banner.textContent = 'Please select a reporting quarter before submitting.';
-      banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      document.getElementById('quarterBar').classList.add('needs-selection');
+      document.getElementById('quarterBar').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       return;
     }
 
