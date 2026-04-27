@@ -248,6 +248,67 @@
 
   #reportContent { display: none; }
   #loadingBox { display: none; text-align: center; padding: 40px; color: var(--gray); }
+
+  /* Text Response Styles */
+  .text-responses {
+    padding: 16px 20px;
+  }
+
+  .text-field-block {
+    margin-bottom: 20px;
+  }
+
+  .text-field-block:last-child { margin-bottom: 0; }
+
+  .text-field-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--gray-light);
+  }
+
+  .response-pills {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .response-pill {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: var(--off-white);
+    border: 1px solid var(--gray-light);
+    border-radius: 3px;
+    padding: 9px 14px;
+    font-size: 14px;
+    color: var(--navy-dark);
+    line-height: 1.4;
+  }
+
+  .response-count {
+    background: var(--navy);
+    color: var(--white);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .no-responses {
+    font-size: 13px;
+    color: var(--gray);
+    font-style: italic;
+    padding: 8px 0;
+  }
 </style>
 </head>
 <body>
@@ -336,6 +397,7 @@
         </thead>
         <tbody id="cycleTable"></tbody>
       </table>
+      <div class="text-responses" id="cycleTextResponses"></div>
     </div>
 
     <!-- Process Efficiency -->
@@ -353,6 +415,7 @@
         </thead>
         <tbody id="processTable"></tbody>
       </table>
+      <div class="text-responses" id="processTextResponses"></div>
     </div>
 
     <!-- Staff Productivity -->
@@ -439,6 +502,44 @@
     return tr;
   }
 
+  function buildTextBlock(label, values) {
+    // Group identical responses and count them
+    const counts = {};
+    values.forEach(v => {
+      if (v && v.trim()) {
+        const key = v.trim();
+        counts[key] = (counts[key] || 0) + 1;
+      }
+    });
+
+    const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+
+    const block = document.createElement('div');
+    block.className = 'text-field-block';
+
+    const lbl = document.createElement('div');
+    lbl.className = 'text-field-label';
+    lbl.textContent = label;
+    block.appendChild(lbl);
+
+    const pills = document.createElement('div');
+    pills.className = 'response-pills';
+
+    if (!entries.length) {
+      pills.innerHTML = '<div class="no-responses">No responses submitted for this field.</div>';
+    } else {
+      entries.forEach(([text, count]) => {
+        const pill = document.createElement('div');
+        pill.className = 'response-pill';
+        pill.innerHTML = `<span class="response-count">${count} of ${values.length}</span><span>${text}</span>`;
+        pills.appendChild(pill);
+      });
+    }
+
+    block.appendChild(pills);
+    return block;
+  }
+
   async function loadReport() {
     const quarter = document.getElementById('filterQuarter').value;
     const year = document.getElementById('filterYear').value;
@@ -487,11 +588,22 @@
       cycTbl.innerHTML = '';
       cycTbl.appendChild(buildRow('Average Quarterly DSO (days)', field('avg_dso'), 'days'));
 
+      // Cycle Time text responses
+      const cycleText = document.getElementById('cycleTextResponses');
+      cycleText.innerHTML = '';
+      cycleText.appendChild(buildTextBlock('Invoice Issuance Day', field('invoice_day')));
+      cycleText.appendChild(buildTextBlock('SLA for Post-Invoice Adjustments', field('adjustment_sla')));
+
       // Process Table
       const procTbl = document.getElementById('processTable');
       procTbl.innerHTML = '';
       procTbl.appendChild(buildRow('Receipts by Check', field('check_pct'), 'pct'));
       procTbl.appendChild(buildRow('Receipts by ACH / Wire', field('ach_pct'), 'pct'));
+
+      // Process text responses
+      const processText = document.getElementById('processTextResponses');
+      processText.innerHTML = '';
+      processText.appendChild(buildTextBlock('Quarterly Write-off % of Combined Revenue', field('writeoff_pct')));
 
       // Staff Table
       const staffTbl = document.getElementById('staffTable');
