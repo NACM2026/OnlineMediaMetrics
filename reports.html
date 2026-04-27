@@ -372,10 +372,10 @@
         <thead>
           <tr>
             <th>Metric</th>
-            <th>Low (Q1)</th>
-            <th>Median</th>
+            <th>25th Percentile</th>
+            <th>Median (50th)</th>
             <th>Average</th>
-            <th>High (Q3)</th>
+            <th>75th Percentile</th>
           </tr>
         </thead>
         <tbody id="arTable"></tbody>
@@ -389,10 +389,10 @@
         <thead>
           <tr>
             <th>Metric</th>
-            <th>Low (Q1)</th>
-            <th>Median</th>
+            <th>25th Percentile</th>
+            <th>Median (50th)</th>
             <th>Average</th>
-            <th>High (Q3)</th>
+            <th>75th Percentile</th>
           </tr>
         </thead>
         <tbody id="cycleTable"></tbody>
@@ -407,10 +407,10 @@
         <thead>
           <tr>
             <th>Metric</th>
-            <th>Low (Q1)</th>
-            <th>Median</th>
+            <th>25th Percentile</th>
+            <th>Median (50th)</th>
             <th>Average</th>
-            <th>High (Q3)</th>
+            <th>75th Percentile</th>
           </tr>
         </thead>
         <tbody id="processTable"></tbody>
@@ -425,10 +425,10 @@
         <thead>
           <tr>
             <th>Metric</th>
-            <th>Low (Q1)</th>
-            <th>Median</th>
+            <th>25th Percentile</th>
+            <th>Median (50th)</th>
             <th>Average</th>
-            <th>High (Q3)</th>
+            <th>75th Percentile</th>
           </tr>
         </thead>
         <tbody id="staffTable"></tbody>
@@ -494,10 +494,10 @@
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${label}</td>
-      <td class="q-low">${f(q1)}</td>
-      <td class="q-mid">${f(med)}</td>
-      <td>${f(av)}</td>
-      <td class="q-high">${f(q3)}</td>
+      <td class="q-low" title="25th Percentile">${f(q1)}</td>
+      <td class="q-mid" title="Median (50th Percentile)">${f(med)}</td>
+      <td title="Average of all responses">${f(av)}</td>
+      <td class="q-high" title="75th Percentile">${f(q3)}</td>
     `;
     return tr;
   }
