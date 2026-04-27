@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NACM Southwest | Submit Metrics</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1a3a6b;
+    --navy-dark: #0f2347;
+    --navy-light: #2a5298;
+    --green: #4a9c2f;
+    --green-light: #5cb83a;
+    --white: #ffffff;
+    --off-white: #f4f6f9;
+    --gray: #6b7280;
+    --gray-light: #e5e7eb;
+    --error: #dc2626;
+    --success: #16a34a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: var(--off-white);
+    color: var(--navy-dark);
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    background: var(--navy-dark);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    border-bottom: 3px solid var(--green);
+  }
+
+  nav img { height: 38px; }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .nav-user {
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+  }
+
+  .nav-user span { color: var(--white); font-weight: 600; }
+
+  .btn-nav {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    background: none;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 3px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+
+  .btn-nav:hover { background: rgba(255,255,255,0.1); color: var(--white); }
+
+  /* MAIN */
+  main {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  .page-header {
+    margin-bottom: 32px;
+  }
+
+  .page-header h1 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 26px;
+    color: var(--navy-dark);
+    margin-bottom: 6px;
+  }
+
+  .page-header p {
+    font-size: 14px;
+    color: var(--gray);
+    line-height: 1.6;
+  }
+
+  .quarter-bar {
+    background: var(--navy);
+    border-radius: 4px;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .quarter-bar label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    white-space: nowrap;
+  }
+
+  .quarter-bar select {
+    padding: 7px 12px;
+    border: 1.5px solid rgba(255,255,255,0.25);
+    border-radius: 3px;
+    background: rgba(255,255,255,0.1);
+    color: var(--white);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .quarter-bar select option { background: var(--navy-dark); color: var(--white); }
+
+  /* CARDS */
+  .section-card {
+    background: var(--white);
+    border-radius: 4px;
+    border: 1px solid var(--gray-light);
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+
+  .section-head {
+    background: var(--navy);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-head h2 {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--white);
+  }
+
+  .section-badge {
+    background: var(--green);
+    color: var(--white);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 2px;
+    margin-left: auto;
+  }
+
+  .section-body {
+    padding: 24px;
+  }
+
+  .fields-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .fields-grid.single { grid-template-columns: 1fr; }
+  .fields-grid.triple { grid-template-columns: 1fr 1fr 1fr; }
+
+  .form-group { margin-bottom: 0; }
+
+  .field-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .field-hint {
+    display: block;
+    font-size: 11px;
+    color: var(--gray);
+    margin-bottom: 7px;
+    line-height: 1.4;
+    font-style: italic;
+  }
+
+  input[type="number"],
+  input[type="text"],
+  textarea {
+    width: 100%;
+    padding: 10px 13px;
+    border: 1.5px solid var(--gray-light);
+    border-radius: 3px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 15px;
+    color: var(--navy-dark);
+    background: var(--white);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    -moz-appearance: textfield;
+  }
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  input:focus, textarea:focus {
+    border-color: var(--navy);
+    box-shadow: 0 0 0 3px rgba(26,58,107,0.08);
+  }
+
+  textarea { resize: vertical; min-height: 72px; }
+
+  .input-suffix {
+    position: relative;
+  }
+
+  .input-suffix input { padding-right: 36px; }
+
+  .suffix-label {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gray);
+    pointer-events: none;
+  }
+
+  /* DSO formula note */
+  .formula-note {
+    background: #eff6ff;
+    border-left: 3px solid var(--navy-light);
+    border-radius: 0 3px 3px 0;
+    padding: 10px 14px;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--navy);
+    line-height: 1.5;
+  }
+
+  .formula-note strong { display: block; margin-bottom: 2px; }
+
+  /* SUBMIT AREA */
+  .submit-area {
+    background: var(--white);
+    border: 1px solid var(--gray-light);
+    border-radius: 4px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .anon-note {
+    font-size: 13px;
+    color: var(--gray);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .anon-note svg { color: var(--green); flex-shrink: 0; }
+
+  .btn-submit {
+    padding: 13px 36px;
+    background: var(--green);
+    color: var(--white);
+    border: none;
+    border-radius: 3px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    white-space: nowrap;
+  }
+
+  .btn-submit:hover { background: #3a8a22; }
+  .btn-submit:active { transform: scale(0.99); }
+  .btn-submit:disabled { background: var(--gray); cursor: not-allowed; }
+
+  /* STATUS */
+  .status-banner {
+    border-radius: 4px;
+    padding: 14px 20px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    display: none;
+  }
+
+  .status-banner.success {
+    background: #f0fdf4;
+    border: 1px solid #86efac;
+    color: var(--success);
+    display: block;
+  }
+
+  .status-banner.error {
+    background: #fef2f2;
+    border: 1px solid #fca5a5;
+    color: var(--error);
+    display: block;
+  }
+
+  /* Divider */
+  .field-divider {
+    grid-column: 1 / -1;
+    height: 1px;
+    background: var(--gray-light);
+    margin: 4px 0;
+  }
+
+  @media (max-width: 600px) {
+    .fields-grid, .fields-grid.triple { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <img src="NACM_SW_Logo.png" alt="NACM Southwest">
+  <div class="nav-right">
+    <div class="nav-user">Signed in as <span id="navUsername">—</span></div>
+    <a href="reports.html" class="btn-nav">View Report</a>
+    <button class="btn-nav" onclick="logout()">Sign Out</button>
+  </div>
+</nav>
+
+<main>
+  <div class="page-header">
+    <h1>Quarterly Metrics Submission</h1>
+    <p>All data is collected and reported anonymously. Select the reporting quarter and complete all applicable fields below.</p>
+  </div>
+
+  <div class="status-banner" id="statusBanner"></div>
+
+  <!-- Quarter Selector -->
+  <div class="quarter-bar">
+    <label for="quarterSelect">Reporting Quarter:</label>
+    <select id="quarterSelect">
+      <option value="">— Select Quarter —</option>
+    </select>
+    <label for="yearSelect">Year:</label>
+    <select id="yearSelect"></select>
+  </div>
+
+  <!-- Section 1: Historical AR Metrics -->
+  <div class="section-card">
+    <div class="section-head">
+      <h2>Accounts Receivable Metrics</h2>
+      <span class="section-badge">Core</span>
+    </div>
+    <div class="section-body">
+      <div class="fields-grid">
+
+        <div class="form-group">
+          <label class="field-label" for="dso">Days Sales Outstanding (DSO)</label>
+          <span class="field-hint">Total A/R × 90 days ÷ sum of last 3 months' sales</span>
+          <div class="input-suffix">
+            <input type="number" id="dso" placeholder="e.g. 65.4" step="0.01" min="0">
+            <span class="suffix-label">days</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="field-label" for="collectionRate">Collection Rate</label>
+          <span class="field-hint">Avg % of dollars collected vs. open subledger A/R at beginning of quarter</span>
+          <div class="input-suffix">
+            <input type="number" id="collectionRate" placeholder="e.g. 87.5" step="0.01" min="0" max="100">
+            <span class="suffix-label">%</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="field-label" for="badDebt">Bad Debt Write-off</label>
+          <span class="field-hint">Avg % of net sales written off to bad debt for the quarter</span>
+          <div class="input-suffix">
+            <input type="number" id="badDebt" placeholder="e.g. 0.25" step="0.01" min="0">
+            <span class="suffix-label">%</span>
+          </div>
+        </div>
+
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <div class="fields-grid triple">
+            <div>
+              <label class="field-label" for="aging0to60">Aging: Current (0–60 days)</label>
+              <span class="field-hint">% of A/R balance in current bucket</span>
+              <div class="input-suffix">
+                <input type="number" id="aging0to60" placeholder="e.g. 82.0" step="0.01" min="0" max="100">
+                <span class="suffix-label">%</span>
+              </div>
+            </div>
+            <div>
+              <label class="field-label" for="aging60to120">Aging: 60–120 Days</label>
+              <span class="field-hint">% of A/R balance in 60–120 day bucket</span>
+              <div class="input-suffix">
+                <input type="number" id="aging60to120" placeholder="e.g. 12.0" step="0.01" min="0" max="100">
+                <span class="suffix-label">%</span>
+              </div>
+            </div>
+            <div>
+              <label class="field-label" for="aging121plus">Aging: 121+ Days</label>
+              <span class="field-hint">% of A/R balance 121+ days past due</span>
+              <div class="input-suffix">
+                <input type="number" id="aging121plus" placeholder="e.g. 6.0" step="0.01" min="0" max="100">
+                <span class="suffix-label">%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2: Cycle Time Metrics -->
+  <div class="section-card">
+    <div class="section-head">
+      <h2>Cycle Time Metrics</h2>
+    </div>
+    <div class="section-body">
+      <div class="fields-grid">
+
+        <div class="form-group">
+          <label class="field-label" for="avgDSO">Average Quarterly DSO</label>
+          <span class="field-hint">Your average DSO for this quarter</span>
+          <div class="input-suffix">
+            <input type="number" id="avgDSO" placeholder="e.g. 68.0" step="0.01" min="0">
+            <span class="suffix-label">days</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="field-label" for="invoiceDay">Monthly Invoice Issuance Day</label>
+          <span class="field-hint">Which calendar/business day do you issue monthly invoices?</span>
+          <input type="text" id="invoiceDay" placeholder="e.g. 1st business day, 15th calendar day">
+        </div>
+
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label class="field-label" for="adjustmentSLA">SLA for Post-Invoice Adjustments</label>
+          <span class="field-hint">Post invoice release — SLA to process adjustments (makegood, overage, etc.)</span>
+          <textarea id="adjustmentSLA" placeholder="e.g. 5 business days from receipt of adjustment request"></textarea>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: Process Efficiency -->
+  <div class="section-card">
+    <div class="section-head">
+      <h2>Process Efficiency Metrics</h2>
+    </div>
+    <div class="section-body">
+      <div class="fields-grid">
+
+        <div class="form-group">
+          <label class="field-label" for="checkPct">Receipts by Check</label>
+          <span class="field-hint">% of receipts/payments received by check</span>
+          <div class="input-suffix">
+            <input type="number" id="checkPct" placeholder="e.g. 20.0" step="0.01" min="0" max="100">
+            <span class="suffix-label">%</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="field-label" for="achPct">Receipts by ACH / Wire</label>
+          <span class="field-hint">% of receipts/payments received by ACH or wire transfer</span>
+          <div class="input-suffix">
+            <input type="number" id="achPct" placeholder="e.g. 80.0" step="0.01" min="0" max="100">
+            <span class="suffix-label">%</span>
+          </div>
+        </div>
+
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label class="field-label" for="writeoffPct">Quarterly Write-off % of Combined Revenue</label>
+          <span class="field-hint">e.g. less than 1%, 2%, etc.</span>
+          <input type="text" id="writeoffPct" placeholder="e.g. less than 1%">
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4: Staff Productivity -->
+  <div class="section-card">
+    <div class="section-head">
+      <h2>Staff Productivity Metrics</h2>
+    </div>
+    <div class="section-body">
+      <div class="fields-grid">
+
+        <div class="form-group">
+          <label class="field-label" for="ftesPerBillion">AR FTEs per $1 Billion Revenue</label>
+          <span class="field-hint">Number of AR FTEs per $1 billion in revenue</span>
+          <input type="number" id="ftesPerBillion" placeholder="e.g. 3.5" step="0.01" min="0">
+        </div>
+
+        <div class="form-group">
+          <label class="field-label" for="accountsPerCollector">Accounts per Collector Portfolio</label>
+          <span class="field-hint">Total number of agencies/advertisers assigned to a single collector</span>
+          <input type="number" id="accountsPerCollector" placeholder="e.g. 120" step="1" min="0">
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Submit -->
+  <div class="submit-area">
+    <div class="anon-note">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+      Your submission is anonymous. Individual company data is never shown in reports.
+    </div>
+    <button class="btn-submit" id="submitBtn" onclick="submitForm()">Submit Metrics &rarr;</button>
+  </div>
+</main>
+
+<script>
+  const SUPABASE_URL = 'https://nffvgazjtpbgchldtacs.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5mZnZnYXpqdHBiZ2NobGR0YWNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczMTU5NTMsImV4cCI6MjA5Mjg5MTk1M30.QODySdFiQwnvoUM17FE5ajJWGjlIKbCXA0L7_inUit0';
+
+  // Auth guard
+  const userId = sessionStorage.getItem('om_user_id');
+  const username = sessionStorage.getItem('om_username');
+  if (!userId) window.location.href = 'index.html';
+  document.getElementById('navUsername').textContent = username || '—';
+
+  function logout() {
+    sessionStorage.clear();
+    window.location.href = 'index.html';
+  }
+
+  // Populate quarter/year selectors
+  (function() {
+    const qSel = document.getElementById('quarterSelect');
+    const ySel = document.getElementById('yearSelect');
+    ['Q1 (Jan–Mar)', 'Q2 (Apr–Jun)', 'Q3 (Jul–Sep)', 'Q4 (Oct–Dec)'].forEach((q, i) => {
+      const opt = document.createElement('option');
+      opt.value = i + 1;
+      opt.textContent = q;
+      qSel.appendChild(opt);
+    });
+    const curYear = new Date().getFullYear();
+    for (let y = curYear; y >= curYear - 5; y--) {
+      const opt = document.createElement('option');
+      opt.value = y;
+      opt.textContent = y;
+      ySel.appendChild(opt);
+    }
+    // Auto-select current quarter
+    const month = new Date().getMonth();
+    const curQ = Math.floor(month / 3) + 1;
+    qSel.value = curQ;
+    ySel.value = curYear;
+  })();
+
+  async function submitForm() {
+    const quarter = document.getElementById('quarterSelect').value;
+    const year = document.getElementById('yearSelect').value;
+    const banner = document.getElementById('statusBanner');
+    const btn = document.getElementById('submitBtn');
+
+    banner.className = 'status-banner';
+
+    if (!quarter) {
+      banner.className = 'status-banner error';
+      banner.textContent = 'Please select a reporting quarter before submitting.';
+      banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      return;
+    }
+
+    const payload = {
+      quarter: parseInt(quarter),
+      year: parseInt(year),
+      dso: parseFloat(document.getElementById('dso').value) || null,
+      collection_rate: parseFloat(document.getElementById('collectionRate').value) || null,
+      bad_debt_pct: parseFloat(document.getElementById('badDebt').value) || null,
+      aging_0_60: parseFloat(document.getElementById('aging0to60').value) || null,
+      aging_60_120: parseFloat(document.getElementById('aging60to120').value) || null,
+      aging_121_plus: parseFloat(document.getElementById('aging121plus').value) || null,
+      avg_dso: parseFloat(document.getElementById('avgDSO').value) || null,
+      invoice_day: document.getElementById('invoiceDay').value.trim() || null,
+      adjustment_sla: document.getElementById('adjustmentSLA').value.trim() || null,
+      check_pct: parseFloat(document.getElementById('checkPct').value) || null,
+      ach_pct: parseFloat(document.getElementById('achPct').value) || null,
+      writeoff_pct: document.getElementById('writeoffPct').value.trim() || null,
+      ftes_per_billion: parseFloat(document.getElementById('ftesPerBillion').value) || null,
+      accounts_per_collector: parseInt(document.getElementById('accountsPerCollector').value) || null
+    };
+
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/om_submissions`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok || res.status === 201) {
+        banner.className = 'status-banner success';
+        banner.textContent = '✓ Your metrics have been submitted successfully. Thank you for participating!';
+        banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        btn.textContent = 'Submitted ✓';
+      } else {
+        const err = await res.json();
+        throw new Error(err.message || 'Submission failed');
+      }
+    } catch(e) {
+      banner.className = 'status-banner error';
+      banner.textContent = 'Error: ' + (e.message || 'Could not submit. Please try again.');
+      btn.disabled = false;
+      btn.textContent = 'Submit Metrics →';
+    }
+  }
+</script>
+</body>
+</html>

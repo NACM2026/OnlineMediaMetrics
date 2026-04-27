@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NACM Southwest | Admin Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1a3a6b;
+    --navy-dark: #0f2347;
+    --navy-light: #2a5298;
+    --green: #4a9c2f;
+    --white: #ffffff;
+    --off-white: #f4f6f9;
+    --gray: #6b7280;
+    --gray-light: #e5e7eb;
+    --error: #dc2626;
+    --amber: #d97706;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Source Sans 3', sans-serif; background: var(--off-white); min-height: 100vh; }
+
+  nav {
+    background: var(--navy-dark);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    border-bottom: 3px solid var(--amber);
+  }
+
+  nav img { height: 38px; }
+  .nav-right { display: flex; align-items: center; gap: 16px; }
+
+  .admin-badge {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--amber);
+    background: rgba(217,119,6,0.15);
+    border: 1px solid rgba(217,119,6,0.3);
+    border-radius: 3px;
+    padding: 4px 10px;
+  }
+
+  .btn-nav {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    background: none;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 3px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-nav:hover { background: rgba(255,255,255,0.1); color: var(--white); }
+
+  main { max-width: 1100px; margin: 0 auto; padding: 40px 20px 80px; }
+
+  .page-header { margin-bottom: 28px; }
+  .page-header h1 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 26px;
+    color: var(--navy-dark);
+    margin-bottom: 6px;
+  }
+  .page-header p { font-size: 14px; color: var(--gray); }
+
+  /* Stats Row */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: var(--white);
+    border: 1px solid var(--gray-light);
+    border-radius: 4px;
+    padding: 20px;
+    border-top: 3px solid var(--navy);
+  }
+
+  .stat-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); margin-bottom: 8px; }
+  .stat-value { font-family: 'Libre Baskerville', serif; font-size: 28px; color: var(--navy); }
+  .stat-sub { font-size: 12px; color: var(--gray); margin-top: 4px; }
+
+  /* Filter Bar */
+  .filter-bar {
+    background: var(--white);
+    border: 1px solid var(--gray-light);
+    border-radius: 4px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .filter-bar label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--navy);
+    white-space: nowrap;
+  }
+
+  .filter-bar select, .filter-bar input {
+    padding: 7px 12px;
+    border: 1.5px solid var(--gray-light);
+    border-radius: 3px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 14px;
+    color: var(--navy-dark);
+    outline: none;
+    background: var(--white);
+  }
+
+  .btn-filter {
+    padding: 8px 20px;
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+    border-radius: 3px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn-filter:hover { background: var(--navy-light); }
+
+  /* Table */
+  .table-card {
+    background: var(--white);
+    border: 1px solid var(--gray-light);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .table-head-bar {
+    background: var(--navy);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .table-head-bar h2 {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--white);
+  }
+
+  .table-count {
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+  }
+
+  .table-scroll { overflow-x: auto; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    min-width: 900px;
+  }
+
+  thead tr {
+    background: var(--off-white);
+    border-bottom: 2px solid var(--gray-light);
+  }
+
+  th {
+    padding: 9px 12px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gray);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--gray-light);
+    color: var(--navy-dark);
+    white-space: nowrap;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f8faff; }
+
+  .badge-q {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 2px;
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--navy);
+    color: var(--white);
+  }
+
+  .empty-state {
+    padding: 48px;
+    text-align: center;
+    color: var(--gray);
+    font-size: 14px;
+  }
+
+  /* Users section */
+  .section-card {
+    background: var(--white);
+    border: 1px solid var(--gray-light);
+    border-radius: 4px;
+    margin-top: 28px;
+    overflow: hidden;
+  }
+
+  .section-head {
+    background: var(--amber);
+    padding: 12px 20px;
+  }
+
+  .section-head h2 {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--white);
+  }
+
+  @media (max-width: 700px) {
+    .stats-row { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <img src="NACM_SW_Logo.png" alt="NACM Southwest">
+  <div class="nav-right">
+    <div class="admin-badge">Admin</div>
+    <button class="btn-nav" onclick="logout()">Sign Out</button>
+  </div>
+</nav>
+
+<main>
+  <div class="page-header">
+    <h1>Admin Portal</h1>
+    <p>View all submissions and manage portal users. Data shown here is identifiable — do not share this view with members.</p>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Total Submissions</div>
+      <div class="stat-value" id="statTotal">—</div>
+      <div class="stat-sub">All time</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">This Quarter</div>
+      <div class="stat-value" id="statThisQ">—</div>
+      <div class="stat-sub" id="statThisQLabel">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Report Threshold</div>
+      <div class="stat-value">4</div>
+      <div class="stat-sub">Minimum responses</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Registered Users</div>
+      <div class="stat-value" id="statUsers">—</div>
+      <div class="stat-sub">Active member logins</div>
+    </div>
+  </div>
+
+  <!-- Filter -->
+  <div class="filter-bar">
+    <label>Quarter:</label>
+    <select id="filterQuarter">
+      <option value="">All Quarters</option>
+      <option value="1">Q1</option>
+      <option value="2">Q2</option>
+      <option value="3">Q3</option>
+      <option value="4">Q4</option>
+    </select>
+    <label>Year:</label>
+    <select id="filterYear">
+      <option value="">All Years</option>
+    </select>
+    <button class="btn-filter" onclick="loadSubmissions()">Filter</button>
+  </div>
+
+  <!-- Submissions Table -->
+  <div class="table-card">
+    <div class="table-head-bar">
+      <h2>Submissions</h2>
+      <span class="table-count" id="tableCount"></span>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Submitted</th>
+            <th>Quarter</th>
+            <th>Year</th>
+            <th>DSO</th>
+            <th>Collection %</th>
+            <th>Bad Debt %</th>
+            <th>Aging 0-60%</th>
+            <th>Aging 60-120%</th>
+            <th>Aging 121+%</th>
+            <th>Avg DSO</th>
+            <th>Check %</th>
+            <th>ACH %</th>
+            <th>FTEs/$1B</th>
+            <th>Accts/Collector</th>
+          </tr>
+        </thead>
+        <tbody id="submissionsTable">
+          <tr><td colspan="15" class="empty-state">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Users Table -->
+  <div class="section-card">
+    <div class="section-head"><h2>Registered Users</h2></div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Username</th>
+            <th>Admin</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody id="usersTable">
+          <tr><td colspan="4" class="empty-state">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<script>
+  const SUPABASE_URL = 'https://nffvgazjtpbgchldtacs.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5mZnZnYXpqdHBiZ2NobGR0YWNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczMTU5NTMsImV4cCI6MjA5Mjg5MTk1M30.QODySdFiQwnvoUM17FE5ajJWGjlIKbCXA0L7_inUit0';
+
+  // Admin guard
+  if (!sessionStorage.getItem('om_user_id') || sessionStorage.getItem('om_is_admin') !== 'true') {
+    window.location.href = 'index.html';
+  }
+
+  function logout() { sessionStorage.clear(); window.location.href = 'index.html'; }
+
+  const qLabels = ['', 'Q1', 'Q2', 'Q3', 'Q4'];
+  const n = v => (v !== null && v !== undefined) ? v : '—';
+  const p = v => (v !== null && v !== undefined) ? v + '%' : '—';
+
+  // Populate year
+  (function() {
+    const ySel = document.getElementById('filterYear');
+    const curYear = new Date().getFullYear();
+    for (let y = curYear; y >= curYear - 5; y--) {
+      const opt = document.createElement('option');
+      opt.value = y; opt.textContent = y;
+      ySel.appendChild(opt);
+    }
+  })();
+
+  async function loadStats() {
+    const curQ = Math.floor(new Date().getMonth() / 3) + 1;
+    const curY = new Date().getFullYear();
+
+    const [allRes, qRes, usersRes] = await Promise.all([
+      fetch(`${SUPABASE_URL}/rest/v1/om_submissions?select=id`, {
+        headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'Prefer': 'count=exact' }
+      }),
+      fetch(`${SUPABASE_URL}/rest/v1/om_submissions?quarter=eq.${curQ}&year=eq.${curY}&select=id`, {
+        headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'Prefer': 'count=exact' }
+      }),
+      fetch(`${SUPABASE_URL}/rest/v1/om_users?select=id`, {
+        headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'Prefer': 'count=exact' }
+      })
+    ]);
+
+    const allData = await allRes.json();
+    const qData = await qRes.json();
+    const userData = await usersRes.json();
+
+    document.getElementById('statTotal').textContent = allData.length;
+    document.getElementById('statThisQ').textContent = qData.length;
+    document.getElementById('statThisQLabel').textContent = `${qLabels[curQ]} ${curY}`;
+    document.getElementById('statUsers').textContent = userData.length;
+  }
+
+  async function loadSubmissions() {
+    const quarter = document.getElementById('filterQuarter').value;
+    const year = document.getElementById('filterYear').value;
+
+    let url = `${SUPABASE_URL}/rest/v1/om_submissions?select=*&order=created_at.desc`;
+    if (quarter) url += `&quarter=eq.${quarter}`;
+    if (year) url += `&year=eq.${year}`;
+
+    const res = await fetch(url, {
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+    });
+    const rows = await res.json();
+
+    const tbody = document.getElementById('submissionsTable');
+    document.getElementById('tableCount').textContent = `${rows.length} record${rows.length !== 1 ? 's' : ''}`;
+
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="15" class="empty-state">No submissions found for selected filters.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = rows.map((r, i) => {
+      const dt = new Date(r.created_at);
+      const date = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      return `<tr>
+        <td>${i + 1}</td>
+        <td>${date}</td>
+        <td><span class="badge-q">${qLabels[r.quarter] || r.quarter}</span></td>
+        <td>${n(r.year)}</td>
+        <td>${n(r.dso)}</td>
+        <td>${p(r.collection_rate)}</td>
+        <td>${p(r.bad_debt_pct)}</td>
+        <td>${p(r.aging_0_60)}</td>
+        <td>${p(r.aging_60_120)}</td>
+        <td>${p(r.aging_121_plus)}</td>
+        <td>${n(r.avg_dso)}</td>
+        <td>${p(r.check_pct)}</td>
+        <td>${p(r.ach_pct)}</td>
+        <td>${n(r.ftes_per_billion)}</td>
+        <td>${n(r.accounts_per_collector)}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  async function loadUsers() {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/om_users?select=id,username,is_admin,created_at&order=created_at.asc`, {
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+    });
+    const users = await res.json();
+    const tbody = document.getElementById('usersTable');
+    if (!users.length) { tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No users found.</td></tr>'; return; }
+    tbody.innerHTML = users.map((u, i) => {
+      const dt = new Date(u.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      return `<tr>
+        <td>${i+1}</td>
+        <td><strong>${u.username}</strong></td>
+        <td>${u.is_admin ? '<span class="badge-q" style="background:var(--amber)">Admin</span>' : '—'}</td>
+        <td>${dt}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  loadStats();
+  loadSubmissions();
+  loadUsers();
+</script>
+</body>
+</html>

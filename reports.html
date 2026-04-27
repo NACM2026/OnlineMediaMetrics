@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NACM Southwest | Benchmarking Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1a3a6b;
+    --navy-dark: #0f2347;
+    --navy-light: #2a5298;
+    --green: #4a9c2f;
+    --green-light: #5cb83a;
+    --white: #ffffff;
+    --off-white: #f4f6f9;
+    --gray: #6b7280;
+    --gray-light: #e5e7eb;
+    --error: #dc2626;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: var(--off-white);
+    color: var(--navy-dark);
+    min-height: 100vh;
+  }
+
+  nav {
+    background: var(--navy-dark);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    border-bottom: 3px solid var(--green);
+  }
+
+  nav img { height: 38px; }
+
+  .nav-right { display: flex; align-items: center; gap: 16px; }
+
+  .btn-nav {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    background: none;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 3px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+
+  .btn-nav:hover { background: rgba(255,255,255,0.1); color: var(--white); }
+
+  main { max-width: 900px; margin: 0 auto; padding: 40px 20px 80px; }
+
+  .page-header { margin-bottom: 28px; }
+  .page-header h1 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 26px;
+    color: var(--navy-dark);
+    margin-bottom: 6px;
+  }
+  .page-header p { font-size: 14px; color: var(--gray); }
+
+  /* Quarter Selector */
+  .filter-bar {
+    background: var(--navy);
+    border-radius: 4px;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .filter-bar label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    white-space: nowrap;
+  }
+
+  .filter-bar select {
+    padding: 7px 12px;
+    border: 1.5px solid rgba(255,255,255,0.25);
+    border-radius: 3px;
+    background: rgba(255,255,255,0.1);
+    color: var(--white);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .filter-bar select option { background: var(--navy-dark); }
+
+  .btn-filter {
+    padding: 8px 20px;
+    background: var(--green);
+    color: var(--white);
+    border: none;
+    border-radius: 3px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn-filter:hover { background: #3a8a22; }
+
+  /* Gate / Loading */
+  .gate-box {
+    background: var(--white);
+    border: 1px solid var(--gray-light);
+    border-radius: 4px;
+    padding: 60px 40px;
+    text-align: center;
+  }
+
+  .gate-icon { font-size: 48px; margin-bottom: 16px; }
+
+  .gate-box h2 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 20px;
+    color: var(--navy);
+    margin-bottom: 10px;
+  }
+
+  .gate-box p { font-size: 14px; color: var(--gray); max-width: 440px; margin: 0 auto; line-height: 1.6; }
+
+  .progress-wrap { margin: 24px auto 0; max-width: 320px; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--gray); margin-bottom: 6px; }
+  .progress-bar { height: 8px; background: var(--gray-light); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--navy-light)); border-radius: 4px; transition: width 0.5s ease; }
+
+  /* Report Content */
+  .report-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .report-title {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 18px;
+    color: var(--navy);
+  }
+
+  .respondent-badge {
+    background: var(--navy);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+  }
+
+  /* Metric Sections */
+  .metric-section {
+    background: var(--white);
+    border: 1px solid var(--gray-light);
+    border-radius: 4px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+
+  .metric-section-head {
+    background: var(--navy);
+    padding: 12px 20px;
+  }
+
+  .metric-section-head h3 {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--white);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  thead tr {
+    background: var(--off-white);
+    border-bottom: 2px solid var(--gray-light);
+  }
+
+  th {
+    padding: 10px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gray);
+  }
+
+  th:not(:first-child) { text-align: right; }
+
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--gray-light);
+    color: var(--navy-dark);
+  }
+
+  td:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+
+  tr:last-child td { border-bottom: none; }
+
+  tr.highlight-avg { background: #f0f4ff; }
+  tr.highlight-avg td { font-weight: 700; color: var(--navy); }
+
+  .q-low { color: var(--green); }
+  .q-high { color: var(--error); }
+  .q-mid { color: var(--navy-light); }
+
+  .anon-footer {
+    margin-top: 28px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--gray);
+    padding: 16px;
+    border-top: 1px solid var(--gray-light);
+  }
+
+  #reportContent { display: none; }
+  #loadingBox { display: none; text-align: center; padding: 40px; color: var(--gray); }
+</style>
+</head>
+<body>
+
+<nav>
+  <img src="NACM_SW_Logo.png" alt="NACM Southwest">
+  <div class="nav-right">
+    <a href="survey.html" class="btn-nav">Submit Data</a>
+    <button class="btn-nav" onclick="logout()">Sign Out</button>
+  </div>
+</nav>
+
+<main>
+  <div class="page-header">
+    <h1>Benchmarking Report</h1>
+    <p>Aggregate metrics from Online Media member submissions. A minimum of 4 responses is required to display results.</p>
+  </div>
+
+  <div class="filter-bar">
+    <label>Quarter:</label>
+    <select id="filterQuarter">
+      <option value="1">Q1 (Jan–Mar)</option>
+      <option value="2">Q2 (Apr–Jun)</option>
+      <option value="3">Q3 (Jul–Sep)</option>
+      <option value="4">Q4 (Oct–Dec)</option>
+    </select>
+    <label>Year:</label>
+    <select id="filterYear"></select>
+    <button class="btn-filter" onclick="loadReport()">Load Report</button>
+  </div>
+
+  <div id="loadingBox">Loading report data…</div>
+
+  <!-- Gate -->
+  <div class="gate-box" id="gateBox" style="display:none">
+    <div class="gate-icon">🔒</div>
+    <h2>Collecting Responses</h2>
+    <p>This report requires a minimum of <strong>4 member submissions</strong> to protect anonymity. Encourage your colleagues to submit their data!</p>
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span>Responses received</span>
+        <span id="progressCount">0 / 4</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Report -->
+  <div id="reportContent">
+    <div class="report-meta">
+      <div class="report-title" id="reportTitle">—</div>
+      <div class="respondent-badge" id="respondentBadge">— Respondents</div>
+    </div>
+
+    <!-- AR Metrics -->
+    <div class="metric-section">
+      <div class="metric-section-head"><h3>Accounts Receivable Metrics</h3></div>
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Low (Q1)</th>
+            <th>Median</th>
+            <th>Average</th>
+            <th>High (Q3)</th>
+          </tr>
+        </thead>
+        <tbody id="arTable"></tbody>
+      </table>
+    </div>
+
+    <!-- Cycle Time -->
+    <div class="metric-section">
+      <div class="metric-section-head"><h3>Cycle Time Metrics</h3></div>
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Low (Q1)</th>
+            <th>Median</th>
+            <th>Average</th>
+            <th>High (Q3)</th>
+          </tr>
+        </thead>
+        <tbody id="cycleTable"></tbody>
+      </table>
+    </div>
+
+    <!-- Process Efficiency -->
+    <div class="metric-section">
+      <div class="metric-section-head"><h3>Process Efficiency Metrics</h3></div>
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Low (Q1)</th>
+            <th>Median</th>
+            <th>Average</th>
+            <th>High (Q3)</th>
+          </tr>
+        </thead>
+        <tbody id="processTable"></tbody>
+      </table>
+    </div>
+
+    <!-- Staff Productivity -->
+    <div class="metric-section">
+      <div class="metric-section-head"><h3>Staff Productivity Metrics</h3></div>
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Low (Q1)</th>
+            <th>Median</th>
+            <th>Average</th>
+            <th>High (Q3)</th>
+          </tr>
+        </thead>
+        <tbody id="staffTable"></tbody>
+      </table>
+    </div>
+
+    <div class="anon-footer">
+      All data is collected and reported anonymously. Individual company figures are never disclosed. &nbsp;&bull;&nbsp; NACM Southwest Online Media Group &copy; 2025
+    </div>
+  </div>
+</main>
+
+<script>
+  const SUPABASE_URL = 'https://nffvgazjtpbgchldtacs.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5mZnZnYXpqdHBiZ2NobGR0YWNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczMTU5NTMsImV4cCI6MjA5Mjg5MTk1M30.QODySdFiQwnvoUM17FE5ajJWGjlIKbCXA0L7_inUit0';
+  const MIN_RESPONSES = 4;
+
+  if (!sessionStorage.getItem('om_user_id')) window.location.href = 'index.html';
+
+  function logout() { sessionStorage.clear(); window.location.href = 'index.html'; }
+
+  // Populate year selector
+  (function() {
+    const ySel = document.getElementById('filterYear');
+    const curYear = new Date().getFullYear();
+    for (let y = curYear; y >= curYear - 5; y--) {
+      const opt = document.createElement('option');
+      opt.value = y; opt.textContent = y;
+      ySel.appendChild(opt);
+    }
+    // Auto-select current quarter
+    const curQ = Math.floor(new Date().getMonth() / 3) + 1;
+    document.getElementById('filterQuarter').value = curQ;
+  })();
+
+  function pct(v) { return v !== null && v !== undefined ? v.toFixed(1) + '%' : '—'; }
+  function num(v, dec=1) { return v !== null && v !== undefined ? v.toFixed(dec) : '—'; }
+
+  function quartile(arr, q) {
+    const sorted = arr.filter(v => v !== null).sort((a,b) => a-b);
+    if (!sorted.length) return null;
+    const pos = (sorted.length - 1) * q;
+    const base = Math.floor(pos);
+    const rest = pos - base;
+    if (sorted[base + 1] !== undefined) return sorted[base] + rest * (sorted[base+1] - sorted[base]);
+    return sorted[base];
+  }
+
+  function avg(arr) {
+    const vals = arr.filter(v => v !== null);
+    if (!vals.length) return null;
+    return vals.reduce((a,b) => a+b, 0) / vals.length;
+  }
+
+  function median(arr) { return quartile(arr, 0.5); }
+
+  function buildRow(label, values, fmt='pct') {
+    const q1 = quartile(values, 0.25);
+    const med = median(values);
+    const av = avg(values);
+    const q3 = quartile(values, 0.75);
+    const f = fmt === 'pct' ? pct : (v) => num(v, fmt === 'days' ? 1 : 1);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${label}</td>
+      <td class="q-low">${f(q1)}</td>
+      <td class="q-mid">${f(med)}</td>
+      <td>${f(av)}</td>
+      <td class="q-high">${f(q3)}</td>
+    `;
+    return tr;
+  }
+
+  async function loadReport() {
+    const quarter = document.getElementById('filterQuarter').value;
+    const year = document.getElementById('filterYear').value;
+    const qNames = ['', 'Q1 (Jan–Mar)', 'Q2 (Apr–Jun)', 'Q3 (Jul–Sep)', 'Q4 (Oct–Dec)'];
+
+    document.getElementById('gateBox').style.display = 'none';
+    document.getElementById('reportContent').style.display = 'none';
+    document.getElementById('loadingBox').style.display = 'block';
+
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/om_submissions?quarter=eq.${quarter}&year=eq.${year}&select=*`,
+        { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
+      );
+      const rows = await res.json();
+      document.getElementById('loadingBox').style.display = 'none';
+
+      const count = rows.length;
+
+      if (count < MIN_RESPONSES) {
+        document.getElementById('gateBox').style.display = 'block';
+        document.getElementById('progressCount').textContent = `${count} / ${MIN_RESPONSES}`;
+        document.getElementById('progressFill').style.width = Math.min(100, (count/MIN_RESPONSES)*100) + '%';
+        return;
+      }
+
+      // Build report
+      document.getElementById('reportContent').style.display = 'block';
+      document.getElementById('reportTitle').textContent = `${qNames[quarter]} ${year} — Benchmarking Report`;
+      document.getElementById('respondentBadge').textContent = `${count} Respondents`;
+
+      const field = f => rows.map(r => r[f]);
+
+      // AR Table
+      const arTbl = document.getElementById('arTable');
+      arTbl.innerHTML = '';
+      arTbl.appendChild(buildRow('Days Sales Outstanding (days)', field('dso'), 'days'));
+      arTbl.appendChild(buildRow('Collection Rate', field('collection_rate'), 'pct'));
+      arTbl.appendChild(buildRow('Bad Debt Write-off', field('bad_debt_pct'), 'pct'));
+      arTbl.appendChild(buildRow('Aging 0–60 Days', field('aging_0_60'), 'pct'));
+      arTbl.appendChild(buildRow('Aging 60–120 Days', field('aging_60_120'), 'pct'));
+      arTbl.appendChild(buildRow('Aging 121+ Days', field('aging_121_plus'), 'pct'));
+
+      // Cycle Table
+      const cycTbl = document.getElementById('cycleTable');
+      cycTbl.innerHTML = '';
+      cycTbl.appendChild(buildRow('Average Quarterly DSO (days)', field('avg_dso'), 'days'));
+
+      // Process Table
+      const procTbl = document.getElementById('processTable');
+      procTbl.innerHTML = '';
+      procTbl.appendChild(buildRow('Receipts by Check', field('check_pct'), 'pct'));
+      procTbl.appendChild(buildRow('Receipts by ACH / Wire', field('ach_pct'), 'pct'));
+
+      // Staff Table
+      const staffTbl = document.getElementById('staffTable');
+      staffTbl.innerHTML = '';
+      staffTbl.appendChild(buildRow('AR FTEs per $1B Revenue', field('ftes_per_billion'), 'num'));
+      staffTbl.appendChild(buildRow('Accounts per Collector Portfolio', field('accounts_per_collector'), 'num'));
+
+    } catch(e) {
+      document.getElementById('loadingBox').style.display = 'none';
+      document.getElementById('gateBox').style.display = 'block';
+      document.getElementById('gateBox').querySelector('p').textContent = 'Error loading report: ' + e.message;
+    }
+  }
+
+  loadReport();
+</script>
+</body>
+</html>
