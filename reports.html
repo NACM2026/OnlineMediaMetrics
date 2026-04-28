@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NACM Southwest | Benchmarking Report</title>
+<title>NACM Southwest | Metrics Report</title>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -411,7 +411,7 @@
 
 <main>
   <div class="page-header">
-    <h1>Benchmarking Report</h1>
+    <h1>Metrics Report</h1>
     <p>Admin view — aggregate metrics from Online Media member submissions. Share results directly with members after the submission window closes.</p>
   </div>
 
@@ -453,7 +453,7 @@
     <div class="pdf-header">
       <img src="NACM_SW_Logo.png" alt="NACM Southwest">
       <div class="pdf-header-right">
-        <div class="pdf-title" id="pdfTitle">Online Media — Benchmarking Report</div>
+        <div class="pdf-title" id="pdfTitle">Online Media — Metrics Report</div>
         <div class="pdf-meta" id="pdfMeta">NACM Southwest &bull; Confidential</div>
       </div>
     </div>
@@ -681,7 +681,7 @@
       // Build report
       document.getElementById('reportContent').style.display = 'block';
       document.getElementById('exportBtn').style.display = 'inline-block';
-      const titleText = `${qNames[quarter]} ${year} — Benchmarking Report`;
+      const titleText = `${qNames[quarter]} ${year} — Metrics Report`;
       document.getElementById('reportTitle').textContent = titleText;
       document.getElementById('pdfTitle').textContent = titleText;
       document.getElementById('pdfMeta').textContent = `NACM Southwest Online Media Group  •  ${count} Respondents  •  Confidential`;
