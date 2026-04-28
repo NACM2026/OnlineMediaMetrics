@@ -246,8 +246,95 @@
     border-top: 1px solid var(--gray-light);
   }
 
-  #reportContent { display: none; }
-  #loadingBox { display: none; text-align: center; padding: 40px; color: var(--gray); }
+  .btn-export {
+    background: var(--green) !important;
+    color: var(--white) !important;
+    border-color: var(--green) !important;
+    opacity: 1 !important;
+  }
+
+  .btn-export:hover { background: #3a8a22 !important; }
+
+  /* ── PRINT / PDF STYLES ── */
+  @media print {
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+    nav, .filter-bar, .page-header p, #loadingBox, .gate-box, .anon-footer { display: none !important; }
+
+    body { background: white !important; font-size: 11px; }
+
+    main { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
+
+    .pdf-header {
+      display: flex !important;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 0 16px;
+      border-bottom: 3px solid #1a3a6b;
+      margin-bottom: 20px;
+    }
+
+    .pdf-header img { height: 40px; }
+
+    .pdf-header-right { text-align: right; }
+
+    .pdf-title {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 18px;
+      color: #1a3a6b;
+      font-weight: 700;
+    }
+
+    .pdf-meta {
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: 3px;
+    }
+
+    .report-meta { margin-bottom: 14px; }
+
+    .report-title { font-size: 15px !important; }
+
+    .metric-section {
+      margin-bottom: 14px !important;
+      page-break-inside: avoid;
+      border: 1px solid #e5e7eb !important;
+    }
+
+    .metric-section-head {
+      background: #1a3a6b !important;
+      padding: 8px 14px !important;
+    }
+
+    .metric-section-head h3 { font-size: 10px !important; }
+
+    table { font-size: 11px !important; }
+
+    th { padding: 7px 12px !important; font-size: 9px !important; }
+    td { padding: 8px 12px !important; }
+
+    .text-responses { padding: 10px 14px !important; }
+
+    .response-pill {
+      padding: 6px 10px !important;
+      font-size: 11px !important;
+    }
+
+    .pdf-footer {
+      display: block !important;
+      margin-top: 20px;
+      padding-top: 12px;
+      border-top: 1px solid #e5e7eb;
+      font-size: 10px;
+      color: #9ca3af;
+      text-align: center;
+    }
+
+    #reportContent { display: block !important; }
+  }
+
+  /* Hidden on screen, shown in print */
+  .pdf-header, .pdf-footer { display: none; }
 
   /* Text Response Styles */
   .text-responses {
@@ -316,7 +403,8 @@
 <nav>
   <img src="NACM_SW_Logo.png" alt="NACM Southwest">
   <div class="nav-right">
-    <a href="survey.html" class="btn-nav">Submit Data</a>
+    <a href="admin.html" class="btn-nav">← Admin</a>
+    <button class="btn-nav btn-export" id="exportBtn" onclick="exportPDF()" style="display:none">⬇ Export PDF</button>
     <button class="btn-nav" onclick="logout()">Sign Out</button>
   </div>
 </nav>
@@ -360,6 +448,16 @@
 
   <!-- Report -->
   <div id="reportContent">
+
+    <!-- PDF-only header (hidden on screen) -->
+    <div class="pdf-header">
+      <img src="NACM_SW_Logo.png" alt="NACM Southwest">
+      <div class="pdf-header-right">
+        <div class="pdf-title" id="pdfTitle">Online Media — Benchmarking Report</div>
+        <div class="pdf-meta" id="pdfMeta">NACM Southwest &bull; Confidential</div>
+      </div>
+    </div>
+
     <div class="report-meta">
       <div class="report-title" id="reportTitle">—</div>
       <div class="respondent-badge" id="respondentBadge">— Respondents</div>
@@ -438,6 +536,13 @@
     <div class="anon-footer">
       All data is collected and reported anonymously. Individual company figures are never disclosed. &nbsp;&bull;&nbsp; NACM Southwest Online Media Group &copy; 2025
     </div>
+
+    <!-- PDF-only footer -->
+    <div class="pdf-footer" id="pdfFooter">
+      All data collected and reported anonymously. Individual company figures are never disclosed.<br>
+      NACM Southwest Online Media Group &mdash; Confidential &bull; Do not distribute without permission.
+    </div>
+
   </div>
 </main>
 
@@ -542,6 +647,10 @@
     return block;
   }
 
+  function exportPDF() {
+    window.print();
+  }
+
   async function loadReport() {
     const quarter = document.getElementById('filterQuarter').value;
     const year = document.getElementById('filterYear').value;
@@ -571,7 +680,11 @@
 
       // Build report
       document.getElementById('reportContent').style.display = 'block';
-      document.getElementById('reportTitle').textContent = `${qNames[quarter]} ${year} — Benchmarking Report`;
+      document.getElementById('exportBtn').style.display = 'inline-block';
+      const titleText = `${qNames[quarter]} ${year} — Benchmarking Report`;
+      document.getElementById('reportTitle').textContent = titleText;
+      document.getElementById('pdfTitle').textContent = titleText;
+      document.getElementById('pdfMeta').textContent = `NACM Southwest Online Media Group  •  ${count} Respondents  •  Confidential`;
       document.getElementById('respondentBadge').textContent = `${count} Respondents`;
 
       const field = f => rows.map(r => r[f]);
