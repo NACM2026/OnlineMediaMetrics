@@ -399,7 +399,6 @@
   <img src="NACM_SW_Logo.png" alt="NACM Southwest">
   <div class="nav-right">
     <div class="nav-user">Signed in as <span id="navUsername">—</span></div>
-    <a href="reports.html" class="btn-nav">View Report</a>
     <button class="btn-nav" onclick="logout()">Sign Out</button>
   </div>
 </nav>
@@ -507,15 +506,6 @@
       <div class="fields-grid">
 
         <div class="form-group">
-          <label class="field-label" for="avgDSO">Average Quarterly DSO</label>
-          <span class="field-hint">Your average DSO for this quarter</span>
-          <div class="input-suffix">
-            <input type="number" id="avgDSO" placeholder="e.g. 68.0" step="0.01" min="0">
-            <span class="suffix-label">days</span>
-          </div>
-        </div>
-
-        <div class="form-group">
           <label class="field-label" for="invoiceDay">Monthly Invoice Issuance Day</label>
           <span class="field-hint">Which calendar/business day do you issue monthly invoices?</span>
           <input type="text" id="invoiceDay" placeholder="e.g. 1st business day, 15th calendar day">
@@ -537,7 +527,7 @@
       <h2>Process Efficiency Metrics</h2>
     </div>
     <div class="section-body">
-      <div class="fields-grid">
+      <div class="fields-grid triple">
 
         <div class="form-group">
           <label class="field-label" for="checkPct">Receipts by Check</label>
@@ -552,7 +542,16 @@
           <label class="field-label" for="achPct">Receipts by ACH / Wire</label>
           <span class="field-hint">% of receipts/payments received by ACH or wire transfer</span>
           <div class="input-suffix">
-            <input type="number" id="achPct" placeholder="e.g. 80.0" step="0.01" min="0" max="100">
+            <input type="number" id="achPct" placeholder="e.g. 70.0" step="0.01" min="0" max="100">
+            <span class="suffix-label">%</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="field-label" for="creditCardPct">Receipts by Credit Card</label>
+          <span class="field-hint">% of receipts/payments received by credit card</span>
+          <div class="input-suffix">
+            <input type="number" id="creditCardPct" placeholder="e.g. 10.0" step="0.01" min="0" max="100">
             <span class="suffix-label">%</span>
           </div>
         </div>
@@ -689,11 +688,12 @@
       aging_0_60: parseFloat(document.getElementById('aging0to60').value) || null,
       aging_60_120: parseFloat(document.getElementById('aging60to120').value) || null,
       aging_121_plus: parseFloat(document.getElementById('aging121plus').value) || null,
-      avg_dso: parseFloat(document.getElementById('avgDSO').value) || null,
+      avg_dso: null,
       invoice_day: document.getElementById('invoiceDay').value.trim() || null,
       adjustment_sla: document.getElementById('adjustmentSLA').value.trim() || null,
       check_pct: parseFloat(document.getElementById('checkPct').value) || null,
       ach_pct: parseFloat(document.getElementById('achPct').value) || null,
+      credit_card_pct: parseFloat(document.getElementById('creditCardPct').value) || null,
       writeoff_pct: document.getElementById('writeoffPct').value.trim() || null,
       ftes_per_billion: parseFloat(document.getElementById('ftesPerBillion').value) || null,
       accounts_per_collector: parseInt(document.getElementById('accountsPerCollector').value) || null

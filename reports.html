@@ -324,7 +324,7 @@
 <main>
   <div class="page-header">
     <h1>Benchmarking Report</h1>
-    <p>Aggregate metrics from Online Media member submissions. A minimum of 4 responses is required to display results.</p>
+    <p>Admin view — aggregate metrics from Online Media member submissions. Share results directly with members after the submission window closes.</p>
   </div>
 
   <div class="filter-bar">
@@ -446,7 +446,9 @@
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5mZnZnYXpqdHBiZ2NobGR0YWNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczMTU5NTMsImV4cCI6MjA5Mjg5MTk1M30.QODySdFiQwnvoUM17FE5ajJWGjlIKbCXA0L7_inUit0';
   const MIN_RESPONSES = 4;
 
-  if (!sessionStorage.getItem('om_user_id')) window.location.href = 'index.html';
+  if (!sessionStorage.getItem('om_user_id') || sessionStorage.getItem('om_is_admin') !== 'true') {
+    window.location.href = 'index.html';
+  }
 
   function logout() { sessionStorage.clear(); window.location.href = 'index.html'; }
 
@@ -559,10 +561,11 @@
 
       const count = rows.length;
 
-      if (count < MIN_RESPONSES) {
+      if (count === 0) {
         document.getElementById('gateBox').style.display = 'block';
-        document.getElementById('progressCount').textContent = `${count} / ${MIN_RESPONSES}`;
-        document.getElementById('progressFill').style.width = Math.min(100, (count/MIN_RESPONSES)*100) + '%';
+        document.getElementById('gateBox').querySelector('h2').textContent = 'No Submissions Yet';
+        document.getElementById('gateBox').querySelector('p').textContent = 'No submissions have been received for this quarter yet.';
+        document.getElementById('gateBox').querySelector('.progress-wrap').style.display = 'none';
         return;
       }
 
@@ -586,7 +589,6 @@
       // Cycle Table
       const cycTbl = document.getElementById('cycleTable');
       cycTbl.innerHTML = '';
-      cycTbl.appendChild(buildRow('Average Quarterly DSO (days)', field('avg_dso'), 'days'));
 
       // Cycle Time text responses
       const cycleText = document.getElementById('cycleTextResponses');
@@ -599,6 +601,7 @@
       procTbl.innerHTML = '';
       procTbl.appendChild(buildRow('Receipts by Check', field('check_pct'), 'pct'));
       procTbl.appendChild(buildRow('Receipts by ACH / Wire', field('ach_pct'), 'pct'));
+      procTbl.appendChild(buildRow('Receipts by Credit Card', field('credit_card_pct'), 'pct'));
 
       // Process text responses
       const processText = document.getElementById('processTextResponses');
