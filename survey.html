@@ -682,6 +682,7 @@
     const payload = {
       quarter: parseInt(quarter),
       year: parseInt(year),
+      submitted_by: sessionStorage.getItem('om_username') || null,
       dso: parseFloat(document.getElementById('dso').value) || null,
       collection_rate: parseFloat(document.getElementById('collectionRate').value) || null,
       bad_debt_pct: parseFloat(document.getElementById('badDebt').value) || null,
