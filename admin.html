@@ -334,7 +334,8 @@
             <th>Check %</th>
             <th>ACH %</th>
             <th>FTEs/$1B</th>
-            <th>Accts/Collector</th>
+          <th>Accts/Collector</th>
+            <th>Submitted By</th>
           </tr>
         </thead>
         <tbody id="submissionsTable">
@@ -456,7 +457,8 @@
         <td>${p(r.check_pct)}</td>
         <td>${p(r.ach_pct)}</td>
         <td>${n(r.ftes_per_billion)}</td>
-        <td>${n(r.accounts_per_collector)}</td>
+       <td>${n(r.accounts_per_collector)}</td>
+        <td>${n(r.submitted_by)}</td>
       </tr>`;
     }).join('');
   }
